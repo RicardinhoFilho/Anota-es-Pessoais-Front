@@ -16,7 +16,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ListIcon from "@material-ui/icons/List";
 
 import { CompareFilter } from "../Utils/CompareFilter";
-import {AutoFormatTitle} from "../Utils/AutoFormatTitle";
+import { AutoFormatTitle } from "../Utils/AutoFormatTitle";
 
 import DeleteNote from "../Components/Notes/DeleteNote";
 import UpdateNote from "../Components/Notes/UpdateNote";
@@ -35,7 +35,10 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 800,
     backgroundColor: theme.palette.background.paper,
     margin: "auto",
-    marginTop: "1em",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+
   },
   item: {
     border: "solid 1.2px",
@@ -50,9 +53,15 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "1em",
     marginBottom: "0.1rem",
   },
+  itens: {
+    display: 'flex',
+    alignItems:'spacing-between'
+  },
   list: {
-    maxHeight: (window.screen.height - 500),
-    overflowY: "scroll"
+    maxHeight: (window.screen.height - 340),
+    maxWidth: (window.screen.width - 500),
+    minWidth: (window.screen.width - 800),
+    overflowY: "scroll",
   },
   link: {
     textDecoration: "none",
@@ -73,6 +82,10 @@ const useStyles = makeStyles((theme) => ({
   loader: {
     marginTop: 200
   },
+  itensCount: {
+    display: 'flex',
+    width: '100%',
+  }
 }));
 
 const Search = () => {
@@ -91,7 +104,7 @@ const Search = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(true);
 
-  
+
   const [titleFormat, setTitleFormat] = useState(true);
 
   const handleShowDetails = (note) => {
@@ -133,126 +146,134 @@ const Search = () => {
   }, [search, refresh]);
 
   if (loading) {
-    return( <>
-     <Header />
-     <Typography align="center" className={classes.loader}>
-       <Loading />
-     </Typography>
-     </>)
-   }
+    return (<>
+      <Header />
+      <Typography align="center" className={classes.loader}>
+        <Loading />
+      </Typography>
+    </>)
+  }
 
   return (
     <>
       <Header />
-      <Typography
-        variant="h3"
-        component="h2"
-        className={classes.title}
-        align="center"
-      >
-        Resultado busca: {search}
-      </Typography>
-      <Typography align="center" className={classes.filter}>
-        <TextField
-          margin="normal"
-          value={filter}
-          onChange={(event) => {
-            setFilter(event.target.value);
-          }}
-          label={<ListIcon />}
-        />
-      </Typography>
-      {repositories.length > 0 ? (
+      <div className={classes.root}>
         <Typography
-          variant="h4"
+          variant="h5"
           component="h2"
           className={classes.title}
-          align="center"
+          align="left"
         >
-          Repositórios
+          Resultado busca: <b>{search}</b>
         </Typography>
-      ) : (
-        ""
-      )}
-
-      <div className={classes.root}>
-        <List className={classes.list}>
-          {repositories.map((item) => (
-            <Link
-              className={
-                filter.length > 0 &&
-                  !CompareFilter(filter, item.title, item.description)
-                  ? classes.hidden
-                  : classes.link
-              }
-              to={`/notes/${item.id}`}
-            >
-              <ListItemLink key={item.id} className={classes.item}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  className={titleFormat? classes.capitalize :classes.title}
-                >
-                  {titleFormat? AutoFormatTitle(item.title) : item.title}
-                </Typography>
-
-                <Typography variant="spam">{item.description}</Typography>
-              </ListItemLink>
-            </Link>
-          ))}
-        </List>
-      </div>
-
-      {notes.length > 0 ? (
-        <Typography
-          variant="h4"
-          component="h2"
-          className={classes.title}
-          align="center"
-        >
-          Notas
+        <Typography align="right" className={classes.filter}>
+          <TextField
+            margin="normal"
+            value={filter}
+            onChange={(event) => {
+              setFilter(event.target.value);
+            }}
+            label={<ListIcon />}
+          />
         </Typography>
-      ) : (
-        ""
-      )}
-
-      <div className={classes.root}>
-        <List className={classes.list}>
-          {notes.map((item) => (
-            <Link
-              className={
-                filter.length > 0 &&
-                  !CompareFilter(filter, item.title, item.description)
-                  ? classes.hidden
-                  : classes.link
-              }
-              to={`/notes/${item.repository_id}`}
-            >
-              <ListItemLink key={item.id} className={classes.item}>
-                <Typography
-                  variant="h4"
-                  component="h2"
-                  className={titleFormat? classes.capitalize :classes.title}
-                >
-                  {titleFormat? AutoFormatTitle(item.title) : item.title}
-                </Typography>
-
-                <Typography variant="spam">{item.description}</Typography>
-
-                <Button
-                  onClick={(event) => {
-                    event.preventDefault();
-                    handleShowDetails(item);
-                  }}
-                >
-                  <SearchIcon />
-                </Button>
-              </ListItemLink>
-            </Link>
-          ))}
-        </List>
       </div>
+    
+        <div className={classes.itensCount}>
+          {repositories.length > 0 ? (
+            <Typography
+              variant="h6"
+              component="h2"
+              className={classes.title}
+              align="center"
+            >
+              Repositórios: {repositories.length}
+            </Typography>
+          ) : (
+            ""
+          )}
+          {notes.length > 0 ? (
+            <Typography
+              variant="h6"
+              component="h2"
+              className={classes.title}
+              align="center"
+            >
+              Notas: {notes.length}
+            </Typography>
+          ) : (
+            ""
+          )}
+        </div>
+        <div className={classes.itens}>
+        <div className={classes}>
+          <List className={classes.list}>
+            {repositories.map((item) => (
+              <Link
+                className={
+                  filter.length > 0 &&
+                    !CompareFilter(filter, item.title, item.description)
+                    ? classes.hidden
+                    : classes.link
+                }
+                to={`/notes/${item.id}`}
+              >
+                <ListItemLink key={item.id} className={classes.item}>
+                  <Typography
+                    variant="h4"
+                    component="h2"
+                    className={titleFormat ? classes.capitalize : classes.title}
+                  >
+                    {titleFormat ? AutoFormatTitle(item.title) : item.title}
+                  </Typography>
 
+                  <Typography variant="spam">{item.description}</Typography>
+                </ListItemLink>
+              </Link>
+            ))}
+          </List>
+        </div>
+
+        
+
+        <div className={"classes"}>
+          <List className={classes.list}>
+            {notes.map((item) => (
+              <Link
+                className={
+                  filter.length > 0 &&
+                    !CompareFilter(filter, item.title, item.description)
+                    ? classes.hidden
+                    : classes.link
+                }
+                to={`/notes/${item.repository_id}`}
+              >
+                <ListItemLink key={item.id} className={classes.item}>
+                  <Typography
+                    variant="h4"
+                    component="h2"
+                    className={titleFormat ? classes.capitalize : classes.title}
+                  >
+                    {titleFormat ? AutoFormatTitle(item.title) : item.title}
+                  </Typography>
+
+                  <Typography variant="spam">{item.description}</Typography>
+
+                  <Button
+                    onClick={(event) => {
+                      event.preventDefault();
+                      handleShowDetails(item);
+                    }}
+                  >
+                    <SearchIcon />
+                  </Button>
+                </ListItemLink>
+              </Link>
+            ))}
+          </List>
+          
+        </div>
+      
+      </div>
       <DeleteNote
         option={modalDelete}
         note={note}

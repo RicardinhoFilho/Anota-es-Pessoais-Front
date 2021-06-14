@@ -8,7 +8,7 @@ import editImage from "../Assets/Edit.svg";
 import SearchIcon from "@material-ui/icons/Search";
 import Loading from "../Components/Loading";
 
-import {AutoFormatTitle} from "../Utils/AutoFormatTitle";
+import { AutoFormatTitle } from "../Utils/AutoFormatTitle";
 import { CompareFilter } from "../Utils/CompareFilter";
 import DeleteNote from "../Components/Notes/DeleteNote";
 import AddNote from "../Components/Notes/AddNote";
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     width: "100%",
-    marginBottom: "1em",
+    // marginBottom: "1em",
   },
   plus: {
     backgroundColor: "#3f51b5",
@@ -59,6 +59,8 @@ const useStyles = makeStyles((theme) => ({
   firstButtons: {
     display: "flex",
     justifyContent: "space-around",
+    alignItems:"center",
+    marginBottom:"3rem"
   },
   hidden: {
     display: "none",
@@ -67,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-2rem",
   },
   list: {
-    maxHeight: (window.screen.height - 500),
+    maxHeight: (window.screen.height - 350),
     overflowY: "scroll"
   },
   capitalize: {
@@ -77,6 +79,11 @@ const useStyles = makeStyles((theme) => ({
   },
   loader: {
     marginTop: 200
+  },
+  headers: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center'
   }
 }));
 
@@ -174,24 +181,25 @@ const Notes = () => {
     <>
       <Header data={notes} />
       <div className={classes.root}>
-        <Typography
-          variant="h2"
-          component="h1"
-          className={titleFormat ? classes.capitalize : classes.title}
-          align="center"
-        >
-          {titleFormat? AutoFormatTitle(repository.title) : repository.title}
-        </Typography>
+        <div className={classes.headers}>
+          <Typography
+            variant="h5"
+            component="h2"
+            className={titleFormat ? classes.capitalize : classes.title}
+            align="center"
+          >
+            {titleFormat ? AutoFormatTitle(repository.title) : repository.title}
+          </Typography>
 
-        <Typography
-          variant="h5"
-          component="h2"
-          className={classes.title}
-          align="center"
-        >
-          Total Anotações: {notes.length}
-          <br />
-        </Typography>
+          <Typography
+            variant="h6"
+            component="h2"
+            className={classes.title}
+            align="center"
+          >
+            Total Anotações: {notes.length}
+          </Typography>
+        </div>
         <div className={classes.firstButtons}>
           <AddNote
             option={modalAdd}
@@ -199,6 +207,17 @@ const Notes = () => {
             repId={id}
             setRefresh={setRefresh}
           />
+
+          <Typography align="center" className={classes.filter}>
+            <TextField
+              margin="normal"
+              value={filter}
+              onChange={(event) => {
+                setFilter(event.target.value);
+              }}
+              label={<ListIcon />}
+            />
+          </Typography>
 
           <FormControlLabel
             label={"Descrições"}
@@ -211,16 +230,9 @@ const Notes = () => {
             }
           />
         </div>
-        <Typography align="center" className={classes.filter}>
-          <TextField
-            margin="normal"
-            value={filter}
-            onChange={(event) => {
-              setFilter(event.target.value);
-            }}
-            label={<ListIcon />}
-          />
-        </Typography>
+        <div className={classes.filter}>
+
+        </div>
         <List className={classes.list}>
           {notes.map((item) => (
             <Link
@@ -245,7 +257,7 @@ const Notes = () => {
                   component="h2"
                   className={titleFormat ? classes.capitalize : classes.title}
                 >
-                  {titleFormat? AutoFormatTitle(item.title) : item.title}
+                  {titleFormat ? AutoFormatTitle(item.title) : item.title}
                 </Typography>
 
                 <Button

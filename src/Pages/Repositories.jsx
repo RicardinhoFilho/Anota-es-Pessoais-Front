@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
 
-    maxHeight: (window.screen.height - 350),
+    maxHeight: (window.screen.height - 260),
     overflowY: "scroll",
 
   },
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     width: "100%",
-    marginBottom: "1em",
+    // marginBottom: "0.1rem",
   },
   plus: {
     backgroundColor: "#3f51b5",
@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
   firstButtons: {
     display: "flex",
     justifyContent: "space-around",
+    marginTop:"-1.2rem",
   },
   repImage: {
     width: "200px",
@@ -175,7 +176,7 @@ const Repositories = () => {
       <Header />
       <div className={classes.root}>
         <Typography
-          variant="h5"
+          variant="h6"
           component="h2"
           className={classes.title}
           align="center"
