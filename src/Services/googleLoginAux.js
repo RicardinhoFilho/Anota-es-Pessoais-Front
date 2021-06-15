@@ -36,10 +36,11 @@ export async function handleGoogleUpdateAccount( email, password,googleEmail, go
 
         const result = await api.patch("/api/user/update", { email, password, newEmail: googleEmail, newPassword: googlePassword });
 
-
+        window.alert("Conta Atualizada com Sucesso");
         localStorage.removeItem("user");
         localStorage.removeItem("password");
     } catch (err) {
-        window.alert(err);
+        //window.alert(err);
+        console.log(err);
     }
 };
