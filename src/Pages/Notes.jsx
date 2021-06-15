@@ -256,7 +256,7 @@ const Notes = () => {
               }
               onClick={() => {
 
-                openInNewTab? window.open(`http://localhost:3000/note/${item.id}`, "_blank")
+                openInNewTab? window.open(`http://191.252.64.232/note/${item.id}`, "_blank")
                 :  handleOpenNoteDetails(
                   item.id,
                   item.title,
