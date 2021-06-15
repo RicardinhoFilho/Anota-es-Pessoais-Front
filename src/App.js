@@ -7,6 +7,7 @@ import Error404 from "./Pages/Error404";
 import Search from "./Pages/Search";
 
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Note from "./Pages/Note";
 function App() {
   return (
     <div className="App">
@@ -33,6 +34,10 @@ function App() {
           <Route exact path="/search/:search">
             <Search />
           </Route>
+          <Route exact path="/note/:id">
+          <Note/>
+          </Route>
+         
           <Route>
             <Error404 /> 
 

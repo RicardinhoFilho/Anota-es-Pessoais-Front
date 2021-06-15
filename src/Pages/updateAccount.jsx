@@ -57,6 +57,7 @@ const UpdateAccount = () => {
   const [remember, setRemember] = useState(true);
   const [showRemember, setShowRemember] = useState(true);
   const [titleFormat, setTitleFormat] = useState(true);
+  const [openInNewTab, setOpenInNewTab] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -101,10 +102,20 @@ const UpdateAccount = () => {
     setTitleFormat(false);
   }
 
+  async function checkOpenInNewTab(){
+    const checkOpenInNewTab = await localStorage.getItem("openInNewTab");
+    if (checkOpenInNewTab === "true") {
+      setOpenInNewTab(true);
+      return;
+    }
+    setOpenInNewTab(false);
+  }
+
   useEffect(() => {
 
     checkRemember();
     checkTitleFormatPreferences();
+    checkOpenInNewTab();
   }, []);
 
   async function handlePreferencesSubmit() {
@@ -122,6 +133,14 @@ const UpdateAccount = () => {
     if (titleFormat) {
       await localStorage.setItem("titleFormatPreferences", "true");
 
+    }
+
+    if(openInNewTab){
+      await localStorage.setItem("openInNewTab", "true");
+    }
+
+    if(!openInNewTab){
+      await localStorage.removeItem("openInNewTab");
     }
   }
 
@@ -340,6 +359,20 @@ const UpdateAccount = () => {
             />
           }
         />
+        <FormControlLabel
+        className={classes.checkBox}
+        label={"Abrir notas em nova guia"}
+        control={
+          <Switch
+            onChange={(ev) => {
+              setOpenInNewTab(!openInNewTab);
+            }}
+            type="checkbox"
+            color="primary"
+            checked={openInNewTab}
+          />
+        }
+      />
         <br />
         {loading ? <Typography align={"center"}><Loading w={50} h={100} t={1000} /></Typography> : ""}
         <Button

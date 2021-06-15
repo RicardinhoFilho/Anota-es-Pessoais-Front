@@ -92,10 +92,7 @@ export default function FullScreenDialog({
   const [annotationError, setAnnotationError] = useState([]);
 
   const [responseError, setResponseError] = useState([]);
-
-
-  //editor
-
+  //console.log(note.annotation[0] === "{" ? "Deu certo" : "não deu certo")
   const [editorState, setEditorState] = useState(() => note.annotation ? (
     note.annotation[0] === "{" ? (
       EditorState.createWithContent(convertFromRaw(JSON.parse(note.annotation)))

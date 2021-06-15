@@ -35,14 +35,14 @@ import api from "../Services/api";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    maxWidth: 800,
+    maxWidth: 1000,
     backgroundColor: theme.palette.background.paper,
     margin: "auto",
     marginTop: "1em",
   },
   list: {
 
-    maxHeight: (window.screen.height - 260),
+    maxHeight: (window.screen.height - 280),
     overflowY: "scroll",
 
   },

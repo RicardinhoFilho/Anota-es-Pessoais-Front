@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-2rem",
   },
   list: {
-    maxHeight: (window.screen.height - 350),
+    maxHeight: (window.screen.height - 340),
     overflowY: "scroll"
   },
   capitalize: {
@@ -100,6 +100,7 @@ const Notes = () => {
   const [modalOpenDetail, setModalOpenDetails] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [filter, setFilter] = useState("");
+  const[openInNewTab,setOpenInNewTab] = useState(true);
 
   const [titleFormat, setTitleFormat] = useState(true);
 
@@ -116,6 +117,7 @@ const Notes = () => {
 
   function handleModalUpdate(id, title, description, annotation) {
     setNote({ id, title, description, annotation });
+    //console.log(note)
     setModalUpdate(true);
     testModals = false;
   }
@@ -140,8 +142,18 @@ const Notes = () => {
     setTitleFormat(false);
   }
 
+  async function checkNotesOption(){
+    const checkNotesOption = await localStorage.getItem("openInNewTab");
+    if (checkNotesOption === "true") {
+      setOpenInNewTab(true);
+      return;
+    }
+    setOpenInNewTab(false);
+  }
+
   useEffect(() => {
     checkTitleFormatPreferences();
+    checkNotesOption();
     async function getData() {
       const token = localStorage.getItem("token");
       try {
@@ -243,12 +255,15 @@ const Notes = () => {
                   : classes.link
               }
               onClick={() => {
-                handleOpenNoteDetails(
+
+                openInNewTab? window.open(`http://localhost:3000/note/${item.id}`, "_blank")
+                :  handleOpenNoteDetails(
                   item.id,
                   item.title,
                   item.description,
                   item.annotation
-                );
+                )
+               
               }}
             >
               <ListItemLink key={item.id} className={classes.item}>
@@ -329,6 +344,7 @@ const Notes = () => {
         setModalDelete={setModalDelete}
         setModalUpdate={setModalUpdate}
         setRefresh={setRefresh}
+        refresh={refresh}
       />
     </>
   );

@@ -21,7 +21,7 @@ import AddFile from "./AddFile";
 import api from "../../Services/api";
 import checkExtension from "../../Utils/CheckExtension";
 
-import {AutoFormatTitle} from "../../Utils/AutoFormatTitle";
+import { AutoFormatTitle } from "../../Utils/AutoFormatTitle";
 
 import trashImage from "../../Assets/Trash.svg";
 import editImage from "../../Assets/Edit.svg";
@@ -94,6 +94,8 @@ export default function FullScreenDialog({
   setModalOpenDetails,
   setModalUpdate,
   setModalDelete,
+  refresh,
+  setRefresh
 }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -101,7 +103,7 @@ export default function FullScreenDialog({
   const [modalFile, setModalFile] = useState(false);
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState([]);
-  const [refresh, setRefresh] = useState(true);
+  // const [refresh, setRefresh] = useState(true);
 
   const [fileLoader, setFileLoader] = useState(true);
 
@@ -134,7 +136,7 @@ export default function FullScreenDialog({
       history.push("/login");
     }
   }
-
+  console.log(note.id)
   async function checkTitleFormatPreferences() {
     const checkTitleFormatPreferences = await localStorage.getItem("titleFormatPreferences");
     if (checkTitleFormatPreferences === "true") {
@@ -173,7 +175,7 @@ export default function FullScreenDialog({
               <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={titleFormat ? classes.capitalize : classes.title}>
-              {titleFormat? AutoFormatTitle(note.title) : note.title}
+              {titleFormat ? AutoFormatTitle(note.title) : note.title}
             </Typography>
             <Button
               onClick={() => {
