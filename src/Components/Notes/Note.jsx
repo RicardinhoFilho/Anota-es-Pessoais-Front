@@ -136,7 +136,7 @@ export default function FullScreenDialog({
       history.push("/login");
     }
   }
-  console.log(note.id)
+  //console.log(note.id)
   async function checkTitleFormatPreferences() {
     const checkTitleFormatPreferences = await localStorage.getItem("titleFormatPreferences");
     if (checkTitleFormatPreferences === "true") {

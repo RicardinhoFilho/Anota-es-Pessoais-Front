@@ -1,4 +1,5 @@
-import React, { useState, useParams } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -17,13 +18,17 @@ import { TextField } from "@material-ui/core/";
 import CheckIcon from "@material-ui/icons/Check";
 //Editor
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
+
+import { stateFromHTML } from "draft-js-import-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 
 import checkDescription from "../../Utils/CheckDescription";
 import checkTitle from "../../Utils/CheckTitle";
 import api from "../../Services/api";
+
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -41,19 +46,18 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "3rem",
 
     //border:"1px solid black",
-    borderRadius: "2px"
+    borderRadius: "2px",
   },
   wrapperClass: {
     padding: "1rem",
     border: "1px solid #ccc",
-
   },
   editorClass: {
     //backgroundColor:"lightgray",
     padding: "1rem",
     border: "1px solid #ccc",
-    maxHeight: (window.screen.height - 500),
-    overflowY: "scroll"
+    maxHeight: window.screen.height - 500,
+    overflowY: "scroll",
   },
   toolbarClass: {
     //display:"block",
@@ -67,15 +71,23 @@ const useStyles = makeStyles((theme) => ({
     // padding: "0.8rem",
     // position: "fixed"
   },
+  submitButton: {
+    backgroundColor: "#3f51b5",
+    color: "#fff",
+  },
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog({ setRefresh, repId }) {
+export function EditeNoteMobile() {
+  const { token, noteId } = useParams();
+
+  const history = useHistory();
+
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const [title, setTitle] = useState("");
   const [titleError, setTitleError] = useState([{ error: true }]);
@@ -107,51 +119,75 @@ export default function FullScreenDialog({ setRefresh, repId }) {
   };
 
   const handleSubmit = async () => {
-    setAnnotation(draftToHtml(convertToRaw(editorState.getCurrentContent())))//Altera valor da anotação
-    if (
-      checkTitle(title).isValid == false
-    ) {
+    setAnnotation(draftToHtml(convertToRaw(editorState.getCurrentContent()))); //Altera valor da anotação
+    if (checkTitle(title).isValid == false) {
       window.alert(`${checkTitle(title).msg} 😨`);
       return;
     }
+    // if (checkDescription(description).isValid == false) {
+    //   window.alert(`${checkDescription(description).msg} 😨`);
+    //   return;
+    // }
+
     if (
-      checkDescription(description).isValid == false
+      JSON.stringify(convertToRaw(editorState.getCurrentContent())).length <=
+      133
     ) {
-      window.alert(`${checkDescription(description).msg} 😨`);
+      window.alert("Não é possível armazenar uma nota sem conteúdo 😣");
       return;
     }
-    
-    if (JSON.stringify(convertToRaw(editorState.getCurrentContent())).length <=133) {
-      window.alert("Não é possível armazenar uma nota sem conteúdo 😣")
-      return
-    }
+
     try {
-      if (description.length == 0) {
-        await api.post(`/api/notes/${repId}`, { title, annotation: JSON.stringify(convertToRaw(editorState.getCurrentContent())) });
-      } else
-        await api.post(`/api/notes/${repId}`, {
-          title,
-          description,
-          annotation: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
-        });
-      setRefresh(true);
+      const response = await api.patch(`/api/note/${noteId}`, {
+        title,
+        description,
+        annotation: JSON.stringify(
+          convertToRaw(editorState.getCurrentContent())
+        ),
+      });
+
       setTitle("");
-      setAnnotation("");
       setDescription("");
       setResponseError("");
       setEditorState(() => EditorState.createEmpty());
-      handleClose();
+      history.push(`/note/${noteId}`);
     } catch (err) {
       setResponseError(err.message);
       window.alert(`Infelizmente não foi possível salvar sua anotação 😱\n 
         Passo 1- Cheque se não tem nenhum caractere indevido em sua nota como um emoji!\n
         Passo 2- Caso não conseguiu identificar nada indevido em sua anotação salve-a em um documento como Word\n
         Passo 3- Entre em contato com ricardinhogiasson16@gmail.com
-        `
-      )
+        `);
+    }
+  };
+
+  useEffect(() => {
+    async function getNote() {
+      try {
+        api.defaults.headers.Authorization = `Bearer ${token}`;
+        console.log("antes", annotation);
+        const noteResponse = await api.get(`/api/note/${noteId}`);
+        const note = await noteResponse.data[0];
+        setTitle(note.title);
+        setDescription(note.description);
+        setAnnotation(note.annotation)
+        
+        note.annotation[0] === "{"
+          ? setEditorState(
+              EditorState.createWithContent(
+                convertFromRaw(JSON.parse(note.annotation))
+              )
+            )
+          : setEditorState(
+              EditorState.createWithContent(stateFromHTML(note.annotation))
+            );
+      } catch (err) {
+        window.alert(`Não é possivel encontrar a nota ${noteId}`);
+      }
     }
 
-  };
+    getNote();
+  }, []);
 
   return (
     <div>
@@ -164,24 +200,6 @@ export default function FullScreenDialog({ setRefresh, repId }) {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <AppBar className={classes.appBar}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>
-              Adicionar Anotação
-            </Typography>
-            <Button autoFocus color="inherit" onClick={handleSubmit}>
-              Salvar <CheckIcon />
-            </Button>
-          </Toolbar>
-        </AppBar>
         <List>
           <ListItem>
             <TextField
@@ -203,8 +221,6 @@ export default function FullScreenDialog({ setRefresh, repId }) {
           </ListItem>
           <Divider />
           <ListItem>
-
-
             <TextField
               label="Descrição"
               margin="normal"
@@ -219,23 +235,25 @@ export default function FullScreenDialog({ setRefresh, repId }) {
               onChange={(event) => {
                 setDescription(event.target.value);
               }}
-
             />
           </ListItem>
           <div className={classes.annotation}>
             <Editor
-
               editorState={editorState}
-
               wrapperClassName={classes.wrapperClass}
               editorClassName={classes.editorClass}
               toolbarClassName={classes.toolbarClass}
               onEditorStateChange={setEditorState}
             />
           </div>
+          <br />
+          <Typography align="center">
+            <Button onClick={handleSubmit} className={classes.submitButton}>
+              Salvar <CheckIcon />
+            </Button>
+          </Typography>
           {responseError}
         </List>
-
       </Dialog>
     </div>
   );

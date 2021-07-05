@@ -5,6 +5,8 @@ import SingUp from "./Pages/SingUp";
 import UpdateAccount from "./Pages/updateAccount";
 import Error404 from "./Pages/Error404";
 import Search from "./Pages/Search";
+import { EditorMobile } from "./Pages/Mobile/EditorMobile";
+import { EditeNoteMobile } from "./Pages/Mobile/EditeNoteMobile";
 
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Note from "./Pages/Note";
@@ -35,12 +37,18 @@ function App() {
             <Search />
           </Route>
           <Route exact path="/note/:id">
-          <Note/>
+            <Note />
           </Route>
-         
-          <Route>
-            <Error404 /> 
 
+          <Route exact path="/mobile_editor/:token/:repId">
+            <EditorMobile />
+          </Route>
+
+          <Route exact path="/mobile_edit_note/:token/:noteId">
+            <EditeNoteMobile />
+          </Route>
+          <Route>
+            <Error404 />
           </Route>
         </Switch>
       </Router>
