@@ -27,9 +27,7 @@ import { AutoFormatTitle } from "../Utils/AutoFormatTitle";
 
 import trashImage from "../Assets/Trash.svg";
 import editImage from "../Assets/Edit.svg";
-import plusImage from "../Assets/Plus.svg";
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
+import draftToHtml from "draftjs-to-html";
 import Loading from "../Components/Loading";
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -43,10 +41,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#d3d3d3",
   },
   annotation: {
-    marginTop: "5vw",
-    textAlign: "center",
-    maxWidth: "1100px",
-    margin: "auto",
+    // marginTop: "5vw",
+    textAlign: "left",
+
+    marginLeft: "2rem",
   },
   imageButtons: {
     width: 30,
@@ -84,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+  hiddenFile: {
+    display: "none"
+  }
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -117,7 +118,7 @@ export default function Note() {
 
   function handleModalUpdate(id, title, description, annotation) {
     setFormatNote({ id, title, description, annotation });
-    console.log(note);
+    //console.log(note);
     setModalUpdate(true);
   }
 
@@ -144,6 +145,7 @@ export default function Note() {
       // //console.log("teste",result);
 
       setNote(noteResponse.data[0]);
+      // document.getElementById("note").innerHTML = note.annotation[0] === "{" ? draftToHtml(JSON.parse(note.annotation)) : (note.annotation)
       // console.log(note)
       setNoteLoader(false);
     } else {
@@ -235,23 +237,24 @@ export default function Note() {
                   </Button>
                   {files.length > 0
                     ? files.map((item) => (
-                        <div className={classes.linkDiv}>
-                          <Button
-                            variant="contained"
-                            className={classes.buttonFile}
-                            onClick={() => {
-                              setFile(item);
-                              setModalFile(true);
-                            }}
-                          >
-                            <Typography className={classes.fileTitle}>
-                              {/* {console.log(item.file)} */}
-                              {checkExtension(item.file)}
-                              {item.title}
-                            </Typography>
-                          </Button>
-                        </div>
-                      ))
+                      <div className={classes.linkDiv}>
+                        <Button
+                          variant="contained"
+                          className={classes.buttonFile}
+                          onClick={() => {
+                            setFile(item);
+                            setModalFile(true);
+                          }}
+                          className={item.title === "@base64TextImage" ? classes.hiddenFile : ""}
+                        >
+                          <Typography className={classes.fileTitle}>
+                            {/* {console.log(item.file)} */}
+                            {checkExtension(item.file)}
+                            {item.title}
+                          </Typography>
+                        </Button>
+                      </div>
+                    ))
                     : ""}
                   {fileLoader ? (
                     <Typography align={"center"}>
@@ -272,31 +275,14 @@ export default function Note() {
               <Loading />
             </Typography>
           ) : (
-            ""
+            <div className={classes.annotation}
+              dangerouslySetInnerHTML={{
+                __html: note.annotation[0] === "{" ? draftToHtml(JSON.parse(note.annotation)) : (note.annotation),
+              }}
+            ></div>
           )}
-          {note.annotation ? (
-            <div className={classes.annotation}>
-              {note.annotation[0] === "{" ? (
-                <Editor
-                  editorState={EditorState.createWithContent(
-                    convertFromRaw(JSON.parse(note.annotation))
-                  )}
-                  wrapperClassName={classes.wrapperClass}
-                  editorClassName={classes.editorClass}
-                  toolbarClassName={classes.toolbarClass}
-                  readOnly={true}
-                />
-              ) : (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: note.annotation,
-                  }}
-                ></div>
-              )}
-            </div>
-          ) : (
-            ""
-          )}
+
+
         </List>
       </Dialog>
       <AddFile
@@ -318,7 +304,7 @@ export default function Note() {
           option={modalUpdate}
           note={formatNote}
           setModalUpdate={setModalUpdate}
-          setRefresh={() => {}}
+          setRefresh={() => { }}
           setNote={setNote}
         />
       ) : (

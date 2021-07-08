@@ -1,4 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+
+
+import { Editor } from '@tinymce/tinymce-react';
+import tinymce from 'tinymce/tinymce';
+
+// Theme
+import 'tinymce/themes/silver';
+// Toolbar icons
+import 'tinymce/icons/default';
+// Editor styles
+import 'tinymce/skins/ui/oxide/skin.min.css';
+
+// importing the plugin js.
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/autolink';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/image';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/charmap';
+import 'tinymce/plugins/hr';
+import 'tinymce/plugins/anchor';
+import 'tinymce/plugins/spellchecker';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/wordcount';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/fullscreen';
+import 'tinymce/plugins/insertdatetime';
+import 'tinymce/plugins/media';
+import 'tinymce/plugins/nonbreaking';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/template';
+import 'tinymce/plugins/help';
+
+
+// import { handleBase64 } from "../../Services/base64Handle";
+
+
+
 import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -17,9 +55,7 @@ import { Modal, TextField } from "@material-ui/core/";
 
 import CheckIcon from "@material-ui/icons/Check";
 //Editor
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
 import draftToHtml from "draftjs-to-html";
 
 import checkDescription from "../../Utils/CheckDescription";
@@ -99,7 +135,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export function EditorMobile() {
   const { token, repId } = useParams();
-
+  const editorRef = useRef(null);
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [modalSucces, setModalSucces] = useState(false);
@@ -115,15 +151,7 @@ export function EditorMobile() {
 
   const [responseError, setResponseError] = useState([]);
 
-  //editor
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
-  const onEditorStateChange = (editorState) => {
-    this.setState({
-      editorState,
-    });
-  };
+ 
 
   const handleModalSucces = () => {
     setModalSucces(!modalSucces);
@@ -138,7 +166,7 @@ export function EditorMobile() {
   };
 
   const handleSubmit = async () => {
-    setAnnotation(draftToHtml(convertToRaw(editorState.getCurrentContent()))); //Altera valor da anotação
+   
     if (checkTitle(title).isValid == false) {
       window.alert(`${checkTitle(title).msg} 😨`);
       return;
@@ -148,12 +176,9 @@ export function EditorMobile() {
       return;
     }
 
-    if (
-      JSON.stringify(convertToRaw(editorState.getCurrentContent())).length <=
-      133
-    ) {
-      window.alert("Não é possível armazenar uma nota sem conteúdo 😣");
-      return;
+    if (!editorRef.current) {
+      window.alert("Não é possível armazenar uma nota sem conteúdo 😣")
+      return
     }
     try {
       api.defaults.headers.Authorization = `Bearer ${token}`;
@@ -161,24 +186,19 @@ export function EditorMobile() {
       if (description.length == 0) {
         await api.post(`/api/notes/${repId}`, {
           title,
-          annotation: JSON.stringify(
-            convertToRaw(editorState.getCurrentContent())
-          ),
+          annotation: editorRef.current.getContent(),
         });
       } else
         await api.post(`/api/notes/${repId}`, {
           title,
           description,
-          annotation: JSON.stringify(
-            convertToRaw(editorState.getCurrentContent())
-          ),
+          annotation: editorRef.current.getContent(),
         });
       handleModalSucces();
       setTitle("");
       setAnnotation("");
       setDescription("");
       setResponseError("");
-      setEditorState(() => EditorState.createEmpty());
 
       handleClose();
     } catch (err) {
@@ -240,13 +260,25 @@ export function EditorMobile() {
             />
           </ListItem>
           <div className={classes.annotation}>
-            <Editor
-              editorState={editorState}
-              wrapperClassName={classes.wrapperClass}
-              editorClassName={classes.editorClass}
-              toolbarClassName={classes.toolbarClass}
-              onEditorStateChange={setEditorState}
+          <Editor
+              onInit={(evt, editor) => editorRef.current = editor}
+              initialValue={""}
+              init={{
+                height: 500,
+                menubar: false,
+                plugins: [
+                  'advlist autolink lists link image charmap print preview anchor',
+                  'searchreplace visualblocks code fullscreen',
+                  'insertdatetime media table paste code help wordcount'
+                ],
+                toolbar: 'undo redo | formatselect | ' +
+                  'bold italic backcolor color | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist outdent indent | ' +
+                  'removeformat |  ',//image |help
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+              }}
             />
+            <div id={"preview"} classes={classes.contentEditableHidden}></div>
           </div>
           <br />
           <Typography align="center">

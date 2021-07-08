@@ -15,14 +15,13 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import VerticalAlignBottomIcon from "@material-ui/icons/VerticalAlignBottom";
 import ModalFile from "./ModalFile";
-
 import { useHistory } from "react-router-dom";
 import AddFile from "./AddFile";
 import api from "../../Services/api";
 import checkExtension from "../../Utils/CheckExtension";
 
 import { AutoFormatTitle } from "../../Utils/AutoFormatTitle";
-
+import draftToHtml from "draftjs-to-html";
 import trashImage from "../../Assets/Trash.svg";
 import editImage from "../../Assets/Edit.svg";
 import plusImage from "../../Assets/Plus.svg";
@@ -42,9 +41,9 @@ const useStyles = makeStyles((theme) => ({
   },
   annotation: {
     marginTop: "5vw",
-    textAlign: "center",
-    maxWidth: "1100px",
-    margin: "auto",
+    textAlign: "left",
+    //maxWidth: "1800px",
+    marginLeft: "2rem",
   },
   imageButtons: {
     width: 30,
@@ -81,6 +80,9 @@ const useStyles = makeStyles((theme) => ({
   files: {
     display: 'flex',
     alignItems: 'center',
+  },
+  hiddenFile: {
+    display: "none",
   }
 }));
 
@@ -155,6 +157,7 @@ export default function FullScreenDialog({
   }, [option, refresh]);
   useEffect(() => {
     checkTitleFormatPreferences()
+    console.log(note)
   }, [])
   return (
     <div>
@@ -224,9 +227,11 @@ export default function FullScreenDialog({
                             setFile(item);
                             setModalFile(true);
                           }}
+
+                          className={item.title === "@base64TextImage" ? classes.hiddenFile : ""}
                         >
                           <Typography className={classes.fileTitle}>
-                            {console.log(item.file)}
+                            {/* {console.log(item.file)} */}
                             {checkExtension(item.file)}
                             {item.title}
                           </Typography>
@@ -242,8 +247,8 @@ export default function FullScreenDialog({
             />
           </ListItem>
           <Divider />
-          {note.annotation ? (<div className={classes.annotation}>
-            {note.annotation[0] === "{" ? (
+          {note.annotation ? (<div className={classes.annotation} id="annpotation">
+            {/* {note.annotation[0] === "{" ? (
               <Editor
                 editorState={EditorState.createWithContent(
                   convertFromRaw(JSON.parse(note.annotation))
@@ -260,7 +265,12 @@ export default function FullScreenDialog({
                 }}
               ></div>
 
-            )}
+            )} */}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: note.annotation[0] === "{" ? draftToHtml(JSON.parse(note.annotation)) : (note.annotation),
+              }}
+            ></div>
 
           </div>) : ""}
         </List>

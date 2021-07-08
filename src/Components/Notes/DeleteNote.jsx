@@ -41,7 +41,7 @@ export default function DeleteRepository({ option, note, setModalDelete, setRefr
   });
 const handleSubmit=()=>{
     api.delete(`/api/note/${note.id}`);
-    setNote("")
+    setNote({title:"", description:"", annotation:" "} )
 }
 
   const handleClose = () => {

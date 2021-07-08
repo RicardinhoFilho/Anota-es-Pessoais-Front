@@ -42,17 +42,23 @@ const AddFile = ({ option, setModalFile, noteId, setRefresh, setFiles, setFileLo
   const classes = useStyles();
 
   const sendFile = async () => {
-    const dataForm = new FormData();
-    for (const file of filesElement.current.files) {
-      dataForm.append("file", file);
-      dataForm.append("title", title);
-      dataForm.append("noteId", noteId);
+    try {
+      const dataForm = new FormData();
+      for (const file of filesElement.current.files) {
+        dataForm.append("file", file);
+        dataForm.append("title", title);
+        dataForm.append("noteId", noteId);
+      }
+      const token = localStorage.getItem("token");
+      api.defaults.headers.Authorization = `Bearer ${JSON.parse(token)}`;
+      const res = await api.post(`/api/files/${noteId}`, dataForm);
+      const files = await api.get(`/api/files/${noteId}`);
+      setFiles(files.data);
+    } catch {
+      window.alert("Não foi possível gravar o anexo!")
     }
-    const token = localStorage.getItem("token");
-    api.defaults.headers.Authorization = `Bearer ${JSON.parse(token)}`;
-    const res = await api.post(`/api/files/${noteId}`, dataForm);
-    const files = await api.get(`/api/files/${noteId}`);
-    setFiles(files.data);
+
+
     setFileLoader(false);
     // console.log(res);
   };
@@ -81,7 +87,7 @@ const AddFile = ({ option, setModalFile, noteId, setRefresh, setFiles, setFileLo
             //console.log(titleError.isValid)
             if (titleError) {
 
-              
+
               setFileLoader(true);
               sendFile();
               event.preventDefault();

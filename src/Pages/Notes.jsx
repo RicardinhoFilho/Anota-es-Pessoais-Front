@@ -268,7 +268,7 @@ const Notes = () => {
             >
               <ListItemLink key={item.id} className={classes.item}>
                 <Typography
-                  variant="h4"
+                  variant="h5"
                   component="h2"
                   className={titleFormat ? classes.capitalize : classes.title}
                 >

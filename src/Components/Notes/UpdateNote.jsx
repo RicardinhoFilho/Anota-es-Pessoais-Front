@@ -1,4 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+
+
+import { Editor } from '@tinymce/tinymce-react';
+import tinymce from 'tinymce/tinymce';
+
+// Theme
+import 'tinymce/themes/silver';
+// Toolbar icons
+import 'tinymce/icons/default';
+// Editor styles
+import 'tinymce/skins/ui/oxide/skin.min.css';
+
+// importing the plugin js.
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/autolink';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/image';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/charmap';
+import 'tinymce/plugins/hr';
+import 'tinymce/plugins/anchor';
+import 'tinymce/plugins/spellchecker';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/wordcount';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/fullscreen';
+import 'tinymce/plugins/insertdatetime';
+import 'tinymce/plugins/media';
+import 'tinymce/plugins/nonbreaking';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/template';
+import 'tinymce/plugins/help';
+
+
+import { handleBase64 } from "../../Services/base64Handle";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -15,12 +52,11 @@ import Slide from "@material-ui/core/Slide";
 import { TextField } from "@material-ui/core/";
 
 import CheckIcon from "@material-ui/icons/Check";
+import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
+import CreateIcon from '@material-ui/icons/Create';
+
 //Editor
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw, ContentState, convertFromHTML, convertFromRaw } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
-import { stateFromHTML } from "draft-js-import-html";
 import checkDescription from "../../Utils/CheckDescription";
 import checkTitle from "../../Utils/CheckTitle";
 import api from "../../Services/api";
@@ -43,30 +79,16 @@ const useStyles = makeStyles((theme) => ({
     //border:"1px solid black",
     borderRadius: "2px",
   },
-  wrapperClass: {
-    padding: "1rem",
-    border: "1px solid #ccc",
-  },
-  editorClass: {
-    //backgroundColor:"lightgray",
-    padding: "1rem",
-    border: "1px solid #ccc",
-    maxHeight: (window.screen.height - 500),
-    overflowY: "scroll"
-  },
-  toolbarClass: {
-    //display:"block",
-    //position:"fixed",
 
-    width: "100%",
-    background: "lightgray",
-    textAlign: "center",
-    padding: "20px 0",
-    // border: "1px solid #ccc",
-    // padding: "0.8rem",
-    // position: "fixed"
+  contentEditable: {
+
+  },
+  contentEditableHidden: {
+    display: "none",
   },
 }));
+
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -80,6 +102,7 @@ export default function FullScreenDialog({
   setNote,
 }) {
   const classes = useStyles();
+  const editorRef = useRef(null);
   const [open, setOpen] = React.useState(false);
 
   const [title, setTitle] = useState("");
@@ -92,23 +115,23 @@ export default function FullScreenDialog({
   const [annotationError, setAnnotationError] = useState([]);
 
   const [responseError, setResponseError] = useState([]);
-  //console.log(note.annotation[0] === "{" ? "Deu certo" : "não deu certo")
-  const [editorState, setEditorState] = useState(() => note.annotation ? (
-    note.annotation[0] === "{" ? (
-      EditorState.createWithContent(convertFromRaw(JSON.parse(note.annotation)))
-    ) : (
-      EditorState.createWithContent(stateFromHTML(note.annotation))
-    )
-  ) : ""
-  );
-  const onEditorStateChange = (editorState) => {
 
-    this.setState({
-      editorState,
-    });
+  const [editorDiv, setEditorDiv] = useState(true);
 
 
+  const log = async() => {
+    if (editorRef.current) {
+      var preview = (editorRef.current.getContent());
+      // console.log(preview);
+      document.getElementById("preview").innerHTML = (editorRef.current.getContent());
+      const images = document.getElementsByTagName("img");
+      const aux = await handleBase64(preview, images, note.id)
+      return aux;
+    }
   };
+
+  //console.log(note.annotation[0] === "{" ? "Deu certo" : "não deu certo")
+  const [content, setContent] = useState();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -120,7 +143,10 @@ export default function FullScreenDialog({
   };
 
   const handleSubmit = async () => {
-    setAnnotation(draftToHtml(convertToRaw(editorState.getCurrentContent())))//Altera valor da anotação
+    const final = await log();
+
+    //console.log(final)
+    //window.alert("olha aqui caramba", annotation)
     if (
       checkTitle(title).isValid == false
     ) {
@@ -137,7 +163,7 @@ export default function FullScreenDialog({
     }
 
 
-    if (JSON.stringify(convertToRaw(editorState.getCurrentContent())).length <= 133) {
+    if (annotation < 0) {
       window.alert("Não é possível armazenar uma nota sem conteúdo 😣")
       return
     }
@@ -146,17 +172,16 @@ export default function FullScreenDialog({
         const response = await api.patch(`/api/note/${note.id}`, {
           title,
           description,
-          annotation: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+          annotation:final,
         });
         const id = note.id;
-        setNote({ id, title, description, annotation: JSON.stringify(convertToRaw(editorState.getCurrentContent())), id });
+        setNote({ id, title, description, annotation:final, id });
         setRefresh(true);
 
         setTitle("");
         setAnnotation("");
         setDescription("");
         setResponseError("");
-        //setEditorState(() => EditorState.createEmpty());
         handleClose();
       } catch (err) {
         setResponseError(err.message);
@@ -172,6 +197,7 @@ export default function FullScreenDialog({
 
   useEffect(() => {
     if (open != option) {
+      //console.log(note.annotation)
       setOpen(option);
       setTitle(note.title);
       setDescription(note.description);
@@ -202,7 +228,7 @@ export default function FullScreenDialog({
             <Typography variant="h6" className={classes.title}>
               Atualizar Anotação
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleSubmit}>
+            <Button autoFocus color="inherit" onClick={handleSubmit}/*handleSubmit */>
               Salvar <CheckIcon />
             </Button>
           </Toolbar>
@@ -246,12 +272,26 @@ export default function FullScreenDialog({
           </ListItem>
           <div className={classes.annotation}>
             <Editor
-              editorState={editorState}
-              wrapperClassName={classes.wrapperClass}
-              editorClassName={classes.editorClass}
-              toolbarClassName={classes.toolbarClass}
-              onEditorStateChange={setEditorState}
+              onInit={(evt, editor) => editorRef.current = editor}
+              initialValue={note.annotation[0] === "{" ? draftToHtml(JSON.parse(note.annotation)) : note.annotation}
+              init={{
+                height: 500,
+                menubar: false,
+                plugins: [
+                  'advlist autolink lists link image charmap print preview anchor',
+                  'searchreplace visualblocks code fullscreen',
+                  'insertdatetime media table paste code help wordcount'
+                ],
+                toolbar: 'undo redo | formatselect | ' +
+                  'bold italic backcolor color | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist outdent indent | ' +
+                  'removeformat |  ',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+              }}
             />
+            <div id={"preview"} classes={classes.contentEditableHidden}>
+
+            </div>
           </div>
 
           {responseError}
