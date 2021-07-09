@@ -9,7 +9,7 @@ export const handleBase64 = async (preview, images, noteId) => {
 
         const response = await fileTransform((images[index].src), noteId);
         //const response = fileTransform(file, noteId);
-        annotation = annotation.replace((images[index].src), `http://localhost:3333/uploads/${response}`);
+        annotation = annotation.replace((images[index].src), `http://cpro47698.publiccloud.com.br/uploads/${response}`);
         //window.alert(annotation);
       } catch {
        // annotation = preview.replace((images[index].src), `cantConvertBase64`);

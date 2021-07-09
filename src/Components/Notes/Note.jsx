@@ -126,17 +126,23 @@ export default function FullScreenDialog({
     setFileLoader(true);
     const token = localStorage.getItem("token");
     ////console.log("teste")
-    if (token) {
-      setFileLoader(true);
-      api.defaults.headers.Authorization = `Bearer ${JSON.parse(token)}`;
-      const result = await api.get(`/api/files/${note.id}`);
-      // //console.log("teste",result);
-      setFiles(result.data);
-      ////console.log(files);
-      setFileLoader(false);
-    } else {
-      history.push("/login");
+    try{
+      if (token) {
+        setFileLoader(true);
+        api.defaults.headers.Authorization = `Bearer ${JSON.parse(token)}`;
+        const result = await api.get(`/api/files/${note.id}`);
+        // //console.log("teste",result);
+        setFiles(result.data);
+        ////console.log(files);
+        
+      } else {
+        history.push("/login");
+      }
     }
+    catch{
+      setFiles("");
+    }
+    setFileLoader(false);
   }
   //console.log(note.id)
   async function checkTitleFormatPreferences() {
