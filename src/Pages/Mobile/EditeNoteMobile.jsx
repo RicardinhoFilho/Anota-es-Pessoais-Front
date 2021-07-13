@@ -192,9 +192,10 @@ export function EditeNoteMobile() {
 
   useEffect(() => {
     async function getNote() {
+      localStorage.setItem("token", token);
       try {
         api.defaults.headers.Authorization = `Bearer ${token}`;
-        console.log("antes", annotation);
+        //console.log("antes", annotation);
         const noteResponse = await api.get(`/api/note/${noteId}`);
         const note = await noteResponse.data[0];
         setTitle(note.title);
