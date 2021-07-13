@@ -61,7 +61,7 @@ import checkDescription from "../../Utils/CheckDescription";
 import checkTitle from "../../Utils/CheckTitle";
 import api from "../../Services/api";
 
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -108,6 +108,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#3f51b5",
     color: "#fff",
   },
+  inputsHidden:{
+    display:'none',
+  }
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -118,7 +121,7 @@ export function EditeNoteMobile() {
   const { token, noteId } = useParams();
 
   const editorRef = useRef(null);
-  const history = useHistory();
+  // const history = useHistory();
 
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -133,6 +136,8 @@ export function EditeNoteMobile() {
   const [annotationError, setAnnotationError] = useState([]);
 
   const [responseError, setResponseError] = useState([]);
+
+  const [editorStyleHidden, setEditorStyleHidden] = useState(false);
 
 
   const log = async () => {
@@ -152,7 +157,7 @@ export function EditeNoteMobile() {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setEditorStyleHidden(true);
   };
 
   const handleSubmit = async () => {
@@ -179,7 +184,7 @@ export function EditeNoteMobile() {
 
       
       handleClose();
-      history.push(`/note/${noteId}`);
+      // history.push(`/note/${noteId}`);
     } catch (err) {
       setResponseError(err.message);
       window.alert(`Infelizmente não foi possível salvar sua anotação 😱\n 
@@ -223,7 +228,7 @@ export function EditeNoteMobile() {
         TransitionComponent={Transition}
       >
         <List>
-          <ListItem>
+          <ListItem className={editorStyleHidden? classes.inputsHidden : ""}>
             <TextField
               label="Título"
               margin="normal"
@@ -242,7 +247,7 @@ export function EditeNoteMobile() {
             />
           </ListItem>
           <Divider />
-          <ListItem>
+          <ListItem className={editorStyleHidden? classes.inputsHidden : ""}>
             <TextField
               label="Descrição"
               margin="normal"
@@ -260,10 +265,11 @@ export function EditeNoteMobile() {
             />
           </ListItem>
           <div className={classes.annotation}>
-            <Editor
+            {!editorStyleHidden ? <Editor 
               onInit={(evt, editor) => editorRef.current = editor}
               initialValue={annotation[0] === "{" ? draftToHtml(JSON.parse(annotation)) : annotation}
               init={{
+                display:editorStyleHidden? 'none' : '',
                 height: 500,
                 menubar: false,
                 plugins: [
@@ -277,13 +283,14 @@ export function EditeNoteMobile() {
                   'removeformat |  ',
                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
               }}
-            />
-            <div id={"preview"} classes={classes.contentEditableHidden}>
+            /> : ""}
+            
+          </div>
+          <div id={"preview"}>
 
             </div>
-          </div>
           <br />
-          <Typography align="center">
+          <Typography align="center" className={editorStyleHidden? classes.inputsHidden : ""}>
             <Button onClick={handleSubmit} className={classes.submitButton}>
               Salvar <CheckIcon />
             </Button>
