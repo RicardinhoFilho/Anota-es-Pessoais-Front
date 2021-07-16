@@ -16,7 +16,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ListIcon from "@material-ui/icons/List";
 
 import { CompareFilter } from "../Utils/CompareFilter";
-import {AutoFormatTitle} from "../Utils/AutoFormatTitle";
+import { AutoFormatTitle } from "../Utils/AutoFormatTitle";
 
 import DeleteNote from "../Components/Notes/DeleteNote";
 import UpdateNote from "../Components/Notes/UpdateNote";
@@ -32,7 +32,7 @@ function ListItemLink(props) {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    maxWidth: (window.screen.width)-500,
+    maxWidth: window.screen.width - 500,
     backgroundColor: theme.palette.background.paper,
     margin: "auto",
     marginTop: "1em",
@@ -51,8 +51,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "0.1rem",
   },
   list: {
-    maxHeight: (window.screen.height - 500),
-    overflowY: "scroll"
+    maxHeight: window.screen.height - 500,
+    overflowY: "scroll",
   },
   link: {
     textDecoration: "none",
@@ -68,14 +68,14 @@ const useStyles = makeStyles((theme) => ({
   capitalize: {
     width: "100%",
     marginBottom: "1em",
-    textTransform: "capitalize"
+    textTransform: "capitalize",
   },
   loader: {
-    marginTop: 200
+    marginTop: 200,
   },
-  headers:{
-    maxWidth: (window.screen.width)-500,
-    display:'flex',
+  headers: {
+    maxWidth: window.screen.width - 500,
+    display: "flex",
   },
 }));
 
@@ -95,7 +95,6 @@ const Search = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(true);
 
-  
   const [titleFormat, setTitleFormat] = useState(true);
 
   const handleShowDetails = (note) => {
@@ -105,7 +104,9 @@ const Search = () => {
   };
 
   async function checkTitleFormatPreferences() {
-    const checkTitleFormatPreferences = await localStorage.getItem("titleFormatPreferences");
+    const checkTitleFormatPreferences = await localStorage.getItem(
+      "titleFormatPreferences"
+    );
     if (checkTitleFormatPreferences === "true") {
       setTitleFormat(true);
       return;
@@ -114,7 +115,7 @@ const Search = () => {
   }
 
   useEffect(() => {
-    checkTitleFormatPreferences()
+    checkTitleFormatPreferences();
     const token = localStorage.getItem("token");
     async function getData() {
       if (token) {
@@ -137,36 +138,38 @@ const Search = () => {
   }, [search, refresh]);
 
   if (loading) {
-    return( <>
-     <Header />
-     <Typography align="center" className={classes.loader}>
-       <Loading />
-     </Typography>
-     </>)
-   }
+    return (
+      <>
+        <Header />
+        <Typography align="center" className={classes.loader}>
+          <Loading />
+        </Typography>
+      </>
+    );
+  }
 
   return (
     <>
       <Header />
       <div className={classes.headers}>
-      <Typography
-        variant="h5"
-        component="h2"
-        className={classes.title}
-        align="center"
-      >
-        Resultado busca: <b>{search}</b>
-      </Typography>
-      <Typography align="" className={classes.filter}>
-        <TextField
-          margin="center"
-          value={filter}
-          onChange={(event) => {
-            setFilter(event.target.value);
-          }}
-          label={<ListIcon />}
-        />
-      </Typography>
+        <Typography
+          variant="h5"
+          component="h2"
+          className={classes.title}
+          align="center"
+        >
+          Resultado busca: <b>{search}</b>
+        </Typography>
+        <Typography align="" className={classes.filter}>
+          <TextField
+            margin="center"
+            value={filter}
+            onChange={(event) => {
+              setFilter(event.target.value);
+            }}
+            label={<ListIcon />}
+          />
+        </Typography>
       </div>
       {repositories.length > 0 ? (
         <Typography
@@ -187,7 +190,7 @@ const Search = () => {
             <Link
               className={
                 filter.length > 0 &&
-                  !CompareFilter(filter, item.title, item.description)
+                !CompareFilter(filter, item.title, item.description)
                   ? classes.hidden
                   : classes.link
               }
@@ -197,9 +200,9 @@ const Search = () => {
                 <Typography
                   variant="h4"
                   component="h2"
-                  className={titleFormat? classes.capitalize :classes.title}
+                  className={titleFormat ? classes.capitalize : classes.title}
                 >
-                  {titleFormat? AutoFormatTitle(item.title) : item.title}
+                  {titleFormat ? AutoFormatTitle(item.title) : item.title}
                 </Typography>
 
                 <Typography variant="spam">{item.description}</Typography>
@@ -228,7 +231,7 @@ const Search = () => {
             <Link
               className={
                 filter.length > 0 &&
-                  !CompareFilter(filter, item.title, item.description)
+                !CompareFilter(filter, item.title, item.description)
                   ? classes.hidden
                   : classes.link
               }
@@ -238,9 +241,9 @@ const Search = () => {
                 <Typography
                   variant="h4"
                   component="h2"
-                  className={titleFormat? classes.capitalize :classes.title}
+                  className={titleFormat ? classes.capitalize : classes.title}
                 >
-                  {titleFormat? AutoFormatTitle(item.title) : item.title}
+                  {titleFormat ? AutoFormatTitle(item.title) : item.title}
                 </Typography>
 
                 <Typography variant="spam">{item.description}</Typography>
@@ -283,8 +286,9 @@ const Search = () => {
         note={note}
         setModalOpenDetails={setModalOpenDetails}
         setModalDelete={setModalDelete}
-        setRefresh={setRefresh}
         setModalUpdate={setModalUpdate}
+        setRefresh={setRefresh}
+        refresh={refresh}
       />
     </>
   );
