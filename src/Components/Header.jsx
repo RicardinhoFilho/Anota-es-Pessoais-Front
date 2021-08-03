@@ -94,17 +94,17 @@ export default function Header() {
           </Typography>
           
           <Typography className={classes.title} variant="h7" noWrap>
-          <Link className={classes.link} to="/repositories">Repositórios</Link>
+          <Link className={classes.link} to="/anotacoes-pessoais/repositories">Repositórios</Link>
           </Typography>
 
           <Typography className={classes.title} variant="h7" noWrap>
-          <Link className={classes.link} to="/login" onClick={
+          <Link className={classes.link} to="/anotacoes-pessoais/login" onClick={
             brokenToken
           }>Sair</Link>
           </Typography>
 
           <Typography className={classes.title} variant="h7" noWrap>
-          <Link className={classes.link} to="/updateAccount">Minha Conta</Link>
+          <Link className={classes.link} to="/anotacoes-pessoais/updateAccount">Minha Conta</Link>
           </Typography>
           
           <div className={classes.search}>
@@ -113,7 +113,7 @@ export default function Header() {
             </div>
             <form onSubmit={(event) =>{
               event.preventDefault();
-              history.push(`/search/${search}`)
+              history.push(`/anotacoes-pessoais/search/${search}`)
             }}>
             <InputBase
               placeholder="Search…"

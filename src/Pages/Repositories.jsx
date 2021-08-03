@@ -148,10 +148,10 @@ const Repositories = () => {
           setData(result.data);
           setRefresh(false);
         } catch {
-          history.push("/login");
+          history.push("/anotacoes-pessoais/login");
         }
       } else {
-        history.push("/login");
+        history.push("/anotacoes-pessoais/login");
       }
     }
 
@@ -226,7 +226,7 @@ const Repositories = () => {
               ? data.map((item) => (
                 <Link
                   className={classes.link}
-                  to={`/notes/${item.id}`}
+                  to={`/anotacoes-pessoais/notes/${item.id}`}
                   className={
                     CompareFilter(filter, item.title, item.description)
                       ? classes.link
@@ -278,7 +278,7 @@ const Repositories = () => {
                 </Link>
               ))
               : data.map((item) => (
-                <Link className={classes.link} to={`/notes/${item.id}`}>
+                <Link className={classes.link} to={`/anotacoes-pessoais/notes/${item.id}`}>
                   <ListItemLink key={item.id} className={classes.item}>
                     <Typography
                       variant="h4"

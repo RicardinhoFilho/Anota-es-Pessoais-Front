@@ -184,7 +184,6 @@ export function EditeNoteMobile() {
 
       
       handleClose();
-      // history.push(`/note/${noteId}`);
     } catch (err) {
       setResponseError(err.message);
       window.alert(`Infelizmente não foi possível salvar sua anotação 😱\n 

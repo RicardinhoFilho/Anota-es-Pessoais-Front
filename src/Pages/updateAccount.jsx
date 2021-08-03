@@ -67,7 +67,7 @@ const UpdateAccount = () => {
 
       // console.log(result);
       // window.location.href = "http://localhost:3000/login";
-      history.push('/login');
+      history.push('/anotacoes-pessoais/login');
     } catch {
       setError(true);
     }
@@ -78,7 +78,7 @@ const UpdateAccount = () => {
     const googlPassword = res.profileObj.googleId;
     handleGoogleUpdateAccount(email, password, googleEmail, googlPassword);
     await handleGoogleLogIn(googleEmail, googlPassword);
-    history.push("/repositories");
+    history.push("/anotacoes-pessoais/repositories");
   }
   async function checkRemember() {
     const rememberEmail = await localStorage.getItem("user");

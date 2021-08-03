@@ -71,7 +71,7 @@ const Login = () => {
 
       api.defaults.headers.Authorization = `Bearer ${token}`;
       //window.location.href = "http://191.252.64.232/repositories";
-      history.push("/repositories");
+      history.push("/anotacoes-pessoais/repositories");
     } catch (err) {
       setError(true);
     }

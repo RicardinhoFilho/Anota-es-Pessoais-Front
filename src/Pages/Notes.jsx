@@ -166,7 +166,7 @@ const Notes = () => {
         setLoading(false);
         setRefresh(false);
       } catch (err) {
-        history.push("/login");
+        history.push("/anotacoes-pessoais/login");
       }
     }
 

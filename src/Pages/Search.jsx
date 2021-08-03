@@ -127,10 +127,10 @@ const Search = () => {
           setLoading(false);
           setRefresh(false);
         } catch {
-          history.push("/login");
+          history.push("/anotacoes-pessoais/login");
         }
       } else {
-        history.push("/login");
+        history.push("/anotacoes-pessoais/login");
       }
     }
 
@@ -194,7 +194,7 @@ const Search = () => {
                   ? classes.hidden
                   : classes.link
               }
-              to={`/notes/${item.id}`}
+              to={`/anotacoes-pessoais/notes/${item.id}`}
             >
               <ListItemLink key={item.id} className={classes.item}>
                 <Typography
@@ -235,7 +235,7 @@ const Search = () => {
                   ? classes.hidden
                   : classes.link
               }
-              to={`/notes/${item.repository_id}`}
+              to={`/anotacoes-pessoais/notes/${item.repository_id}`}
             >
               <ListItemLink key={item.id} className={classes.item}>
                 <Typography

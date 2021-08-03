@@ -59,7 +59,7 @@ const SingUp = () => {
       // console.log(result);
       await localStorage.setItem("user", email);
       await localStorage.setItem("password", password);
-      history.push("login");
+      history.push("/anotacoes-pessoais/login");
     } catch {
       setError(true);
     }
@@ -72,7 +72,7 @@ const SingUp = () => {
 
     await handleGoogleLogUp(email, password);
     await handleGoogleLogIn(email, password);
-    history.push("/repositories");
+    history.push("/anotacoes-pessoais/repositories");
   }
 
   return (
