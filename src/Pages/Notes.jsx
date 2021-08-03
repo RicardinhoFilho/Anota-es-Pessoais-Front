@@ -256,7 +256,7 @@ const Notes = () => {
               }
               onClick={() => {
 
-                openInNewTab? window.open(`http://solucoes.sinsoft.com.br/note/${item.id}`, "_blank")
+                openInNewTab? window.open(`http://solucoes.sinsoft.com.br/anotacoes-pessoais/note/${item.id}`, "_blank")
                 :  handleOpenNoteDetails(
                   item.id,
                   item.title,
