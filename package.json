@@ -1,5 +1,6 @@
 {
   "name": "dev-annotations",
+  "homepage": "http://solucoes.sinsoft.com.br/anotacoes-pessoais",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
