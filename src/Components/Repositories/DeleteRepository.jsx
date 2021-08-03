@@ -103,7 +103,7 @@ const handleSubmit=async(ev)=>{
               </Typography>
               ) : (
                 <Typography variant="subtitle">
-                  Obs:Após a exclusão de um repositório não é possível recupera-lo, está desabilitada a exclusão de repositórios povoados!
+                  Obs:Após a exclusão de um repositório não é possível recupera-lo!
                 </Typography>
               )}
        </Typography>

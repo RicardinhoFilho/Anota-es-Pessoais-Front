@@ -66,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   buttonFile: {
-    margin: "5px",
+    marginRight: "5px",
+   
   },
   fileTitle: {
     fontSize: "12px",
@@ -227,7 +228,7 @@ export default function FullScreenDialog({
                     ? files.map((item) => (
                       <div className={classes.linkDiv}>
                         <Button
-                          variant="contained"
+                          // variant="contained"
                           className={classes.buttonFile}
                           onClick={() => {
                             setFile(item);

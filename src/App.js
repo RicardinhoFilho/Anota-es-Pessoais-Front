@@ -18,37 +18,37 @@ function App() {
           <Route exact path="/">
             <Repositories />
           </Route>
-          <Route exact path="/login">
+          <Route  path="/login">
             <Login />
           </Route>
-          <Route exact path="/singup">
+          <Route  path="/singup">
             <SingUp />
           </Route>
-          <Route exact path="/updateAccount">
+          <Route  path="/updateAccount">
             <UpdateAccount />
           </Route>
-          <Route exact path="/repositories">
+          <Route  path="/repositories">
             <Repositories />
           </Route>
-          <Route exact path="/notes/:id">
+          <Route  path="/notes/:id">
             <Notes />
           </Route>
-          <Route exact path="/search/:search">
+          <Route  path="/search/:search">
             <Search />
           </Route>
-          <Route exact path="/note/:id">
+          <Route  path="/note/:id">
             <Note />
           </Route>
 
-          <Route exact path="/mobile_editor/:token/:repId">
+          <Route  path="/mobile_editor/:token/:repId">
             <EditorMobile />
           </Route>
 
-          <Route exact path="/mobile_edit_note/:token/:noteId">
+          <Route  path="/mobile_edit_note/:token/:noteId">
             <EditeNoteMobile />
           </Route>
           <Route>
-            <Error404 />
+            <Repositories />
           </Route>
         </Switch>
       </Router>
